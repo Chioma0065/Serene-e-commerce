@@ -103,7 +103,8 @@ fun ThemePreview() {
                         reviewCount = 124,
                         description = "This Hydrating Facial Moisturizer is expertly formulated to deeply nourish and hydrate your skin, providing lasting moisture and a smooth, radiant complexion. Ideal for daily use.",
                         imageUrl = null,
-                    ) {}
+                        onAddClick = {}
+                    )
                 }
 
                 // --- Color Palette ---
