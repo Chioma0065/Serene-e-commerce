@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,11 +22,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCartCheckout
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ShoppingBag
@@ -38,6 +41,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -51,11 +55,17 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,6 +74,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import coil3.compose.AsyncImage
 import com.assessment.sereneecommerce.navigation.bottomNavItems
 
 // --- Buttons ---
@@ -102,10 +113,7 @@ fun SereneButton(
 
 @Composable
 fun SereneSecondaryButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -123,10 +131,7 @@ fun SereneSecondaryButton(
 
 @Composable
 fun SereneGhostButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true
 ) {
     TextButton(
         onClick = onClick,
@@ -142,9 +147,7 @@ fun SereneGhostButton(
 
 @Composable
 fun SereneQuantityPicker(
-    quantity: Int,
-    onQuantityChange: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    quantity: Int, onQuantityChange: (Int) -> Unit, modifier: Modifier = Modifier
 ) {
     Surface(
         modifier = modifier
@@ -210,10 +213,7 @@ fun SereneQuantityPicker(
 
 @Composable
 fun SereneCategoryChip(
-    text: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    text: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     Surface(
         onClick = onClick,
@@ -223,8 +223,7 @@ fun SereneCategoryChip(
         contentColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
     ) {
         Box(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.padding(horizontal = 16.dp), contentAlignment = Alignment.Center
         ) {
             Text(text = text, style = MaterialTheme.typography.labelMedium)
         }
@@ -233,9 +232,7 @@ fun SereneCategoryChip(
 
 @Composable
 fun SereneStatusBadge(
-    text: String,
-    type: SereneBadgeType,
-    modifier: Modifier = Modifier
+    text: String, type: SereneBadgeType, modifier: Modifier = Modifier
 ) {
     val containerColor = when (type) {
         SereneBadgeType.NEW -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
@@ -253,8 +250,7 @@ fun SereneStatusBadge(
         contentColor = contentColor
     ) {
         Box(
-            modifier = Modifier.padding(horizontal = 10.dp),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.padding(horizontal = 10.dp), contentAlignment = Alignment.Center
         ) {
             Text(text = text, style = MaterialTheme.typography.labelSmall)
         }
@@ -265,7 +261,6 @@ enum class SereneBadgeType { NEW, SALE }
 
 // --- Product Card ---
 
-// TODO: Call in product list inside HomeScreen.kt file
 @Composable
 fun SereneProductCard(
     title: String,
@@ -276,10 +271,10 @@ fun SereneProductCard(
     rating: Float,
     reviewCount: Int,
     description: String,
-    imageUrl: String?, // TODO: Replace with imageUrl gotten from endpoint
+    imageUrl: String?,
     onAddClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     Card(
         onClick = onClick,
@@ -290,9 +285,7 @@ fun SereneProductCard(
         ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
-        // TODO: Position the category and subCategory components on top of the image
         Column {
-            // TODO: Replace with Image
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -300,6 +293,73 @@ fun SereneProductCard(
                     .background(MaterialTheme.colorScheme.background)
             ) {
                 // Image placeholder
+
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(MaterialTheme.spacing.xs),
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xxs)
+                ) {
+                    Surface(
+                        shape = CircleShape, color = MaterialTheme.colorScheme.primary
+                    ) {
+                        Text(
+                            text = category,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.padding(
+                                    horizontal = MaterialTheme.spacing.xs,
+                                    vertical = MaterialTheme.spacing.xxs
+                                )
+
+                        )
+                    }
+
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                    ) {
+                        Text(
+                            text = subCategory,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.padding(
+                                    horizontal = MaterialTheme.spacing.xs,
+                                    vertical = MaterialTheme.spacing.xxs
+                                )
+                        )
+                    }
+
+                }
+
+                var favourite by remember { mutableStateOf(false) }
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(MaterialTheme.spacing.xs)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                    ) {
+                        IconButton(onClick = { favourite = !favourite }) {
+                            Icon(
+                                imageVector = if (favourite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                                contentDescription = if (favourite) "Remove from favourites" else "Add to favourite",
+                                tint = if (favourite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                            )
+
+                        }
+                    }
+
+                }
             }
             Spacer(Modifier.height(MaterialTheme.spacing.md))
             // Rating
@@ -354,9 +414,11 @@ fun SereneProductCard(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                ) {
                     keywords.forEach {
                         Text(
                             text = "#$it",
@@ -381,14 +443,16 @@ fun SereneProductCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    SereneQuantityPicker(quantity = 1, onQuantityChange = {})
+
+                    var quantity by remember { mutableIntStateOf(1) }
+                    SereneQuantityPicker(
+                        quantity = quantity, onQuantityChange = { quantity = it })
                     Spacer(Modifier.width(MaterialTheme.spacing.md))
                     SereneButton(
                         text = "Add to Cart",
                         icon = Icons.Default.ShoppingCartCheckout,
                         modifier = Modifier.weight(1f),
-                        onClick = {}
-                    )
+                        onClick = { onAddClick() })
                 }
             }
         }
@@ -435,9 +499,7 @@ fun SereneTextField(
 
 @Composable
 fun SereneCheckbox(
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    checked: Boolean, onCheckedChange: (Boolean) -> Unit, modifier: Modifier = Modifier
 ) {
     Checkbox(
         checked = checked,
@@ -453,9 +515,7 @@ fun SereneCheckbox(
 
 @Composable
 fun SereneRadioButton(
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     RadioButton(
         selected = selected,
@@ -484,76 +544,66 @@ fun SereneTopBar(
     TopAppBar(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding(),
-        title = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = if (shouldShowNavIcon) MaterialTheme.spacing.md else 0.dp)
-            )
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background
-        ),
-        windowInsets = WindowInsets(right = MaterialTheme.spacing.xs),
-        navigationIcon = {
-            if (shouldShowNavIcon) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                    contentDescription = "back",
-                    modifier = Modifier
-                        .padding(start = MaterialTheme.spacing.xs)
-                        .size(32.dp)
-                        .padding(2.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            onNavIconClick()
-                        }
-                )
-            }
-        },
-        actions = {
+            .statusBarsPadding(), title = {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = if (shouldShowNavIcon) MaterialTheme.spacing.md else 0.dp)
+        )
+    }, colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.background
+    ), windowInsets = WindowInsets(right = MaterialTheme.spacing.xs), navigationIcon = {
+        if (shouldShowNavIcon) {
             Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search",
+                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                contentDescription = "back",
                 modifier = Modifier
-                    .size(MaterialTheme.spacing.lg)
-                    .clip(CircleShape)
-                    .clickable(onClick = onSearchClick)
-            )
-            Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
-            BadgedBox(
-                modifier = Modifier.size(MaterialTheme.spacing.lg),
-                badge = {
-                    Badge(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ) {
-                        Text("2")
-                    }
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.ShoppingBag,
-                    contentDescription = "Cart",
-                    modifier = Modifier
-                        .clickable(onClick = onCartClick)
-                )
-            }
-            Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
-            Icon(
-                imageVector = Icons.Outlined.Person,
-                contentDescription = "Profile",
-                modifier = Modifier
-                    .size(MaterialTheme.spacing.lg)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+                    .padding(start = MaterialTheme.spacing.xs)
+                    .size(32.dp)
                     .padding(2.dp)
-                    .clickable(onClick = onProfileClick)
+                    .clip(CircleShape)
+                    .clickable {
+                        onNavIconClick()
+                    })
+        }
+    }, actions = {
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = "Search",
+            modifier = Modifier
+                .size(MaterialTheme.spacing.lg)
+                .clip(CircleShape)
+                .clickable(onClick = onSearchClick)
+        )
+        Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
+        BadgedBox(
+            modifier = Modifier.size(MaterialTheme.spacing.lg), badge = {
+                Badge(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Text("2")
+                }
+            }) {
+            Icon(
+                imageVector = Icons.Outlined.ShoppingBag,
+                contentDescription = "Cart",
+                modifier = Modifier.clickable(onClick = onCartClick)
             )
         }
-    )
+        Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
+        Icon(
+            imageVector = Icons.Outlined.Person,
+            contentDescription = "Profile",
+            modifier = Modifier
+                .size(MaterialTheme.spacing.lg)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+                .padding(2.dp)
+                .clickable(onClick = onProfileClick)
+        )
+    })
 }
 
 @Composable
@@ -566,36 +616,30 @@ fun SereneBottomNavBar(currentDestination: NavDestination?, navController: NavHo
             val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
             NavigationBarItem(
                 icon = {
-                    if (screen.selectedIcon != null && screen.unselectedIcon != null) {
-                        if (selected) Icon(
-                            imageVector = screen.selectedIcon,
-                            contentDescription = screen.label
-                        ) else Icon(
-                            imageVector = screen.unselectedIcon,
-                            contentDescription = screen.label
-                        )
+                if (screen.selectedIcon != null && screen.unselectedIcon != null) {
+                    if (selected) Icon(
+                        imageVector = screen.selectedIcon, contentDescription = screen.label
+                    ) else Icon(
+                        imageVector = screen.unselectedIcon, contentDescription = screen.label
+                    )
+                }
+            }, label = {
+                Text(text = screen.label, style = MaterialTheme.typography.labelSmall)
+            }, selected = selected, onClick = {
+                navController.navigate(screen.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
                     }
-                },
-                label = {
-                    Text(text = screen.label, style = MaterialTheme.typography.labelSmall)
-                },
-                selected = selected,
-                onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    indicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
-                )
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }, colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                indicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+            )
             )
         }
     }
@@ -682,15 +726,14 @@ fun SereneProductCardPreview() {
     SereneCommerceTheme {
         SereneProductCard(
             title = "Organic Herbal Facial Serum",
-            imageUrl = "https://kolzsticks.github.io/Free-Ecommerce-Products-Api/main/images/products/moisturizer.jpg",
             category = "Beauty & Personal Care",
+            subCategory = "Skincare",
+            keywords = listOf("moisturizer", "hydration", "skincare", "beauty"),
             price = "$${2000 / 100.0}",
             rating = 4.5f,
             reviewCount = 120,
-            subCategory = "Skincare",
-            keywords = listOf("moisturizer", "hydration", "skincare", "beauty"),
             description = "This Hydrating Facial Moisturizer is expertly formulated to deeply nourish and hydrate your skin, providing lasting moisture and a smooth, radiant complexion. Ideal for daily use.",
-            onAddClick = {}
-        )
+            imageUrl = "https://kolzsticks.github.io/Free-Ecommerce-Products-Api/main/images/products/moisturizer.jpg",
+            onAddClick = {})
     }
 }

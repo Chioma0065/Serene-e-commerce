@@ -46,14 +46,12 @@ sealed class Screen(
     )
 
     object Detail : Screen(
-        route = "detail",
-        label = "Detail"
-    )
+        route = "detail/{productJson}", label = "Detail"
+    ) {
+        fun createRoute(productJson: String) = "detail/$productJson"
+    }
 }
 
 val bottomNavItems = listOf(
-    Screen.Home,
-    Screen.Cart,
-    Screen.Favorites,
-    Screen.Profile
+    Screen.Home, Screen.Cart, Screen.Favorites, Screen.Profile
 )
