@@ -15,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.decodeFromString
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
@@ -53,7 +52,7 @@ fun SereneCommerceApp() {
     val currentDestination = navBackStackEntry?.destination
     Scaffold(topBar = {
         SereneTopBar(
-            title = if (currentDestination?.route == Screen.Detail.route) "Produce Detail" else "Shop Explore",
+            title = if (currentDestination?.route == Screen.Detail.route) "Product Detail" else "Shop Explore",
             shouldShowNavIcon = currentDestination?.route == Screen.Detail.route,
             onNavIconClick = { navController.popBackStack() })
     }, bottomBar = {

@@ -1,7 +1,7 @@
 package com.assessment.sereneecommerce.ui.detail
 
-
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,9 +18,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.EnergySavingsLeaf
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.AndroidUiModes
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -63,7 +68,6 @@ fun DetailContent(product: Product) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        // Product image with favourite icon
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -73,9 +77,35 @@ fun DetailContent(product: Product) {
             AsyncImage(
                 model = product.image,
                 contentDescription = product.name,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize()
             )
+
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(MaterialTheme.spacing.xs),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f)
+            ) {
+
+                Row {
+
+                    Icon(
+                        imageVector = Icons.Filled.Circle, contentDescription = null
+                    )
+                    Text(
+                        text = "MINDFUL CRAFT",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.padding(
+                            horizontal = MaterialTheme.spacing.xs,
+                            vertical = MaterialTheme.spacing.xxs
+                        )
+                    )
+                }
+            }
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -94,6 +124,24 @@ fun DetailContent(product: Product) {
                     }
                 }
             }
+
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(MaterialTheme.spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xxs)
+            ) {
+                repeat(3) { index ->
+                    Box(
+                        modifier = Modifier
+                            .size(if (index == 0) 8.dp else 6.dp)
+                            .background(
+                                color = if (index == 0) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.outlineVariant, shape = CircleShape
+                            )
+                    )
+                }
+            }
         }
 
         Column(
@@ -102,77 +150,158 @@ fun DetailContent(product: Product) {
                 .padding(MaterialTheme.spacing.md),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs)
         ) {
-            // Breadcrumb: category • subCategory
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = product.category,
+                    product.category,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "  •  ",
+                    "  •  ",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = product.subCategory,
+                    product.subCategory,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            // Title
             Text(
-                text = product.name,
+                product.name,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
 
-            // Rating
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = null,
+                        tint = RatingAccent,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(Modifier.width(MaterialTheme.spacing.xxs))
+                    Text(
+                        product.rating.stars.toString(), style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(Modifier.width(MaterialTheme.spacing.xxs))
+                    Text(
+                        "(${product.rating.count} customer ratings)",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { }) {
+                    Text(
+                        "Read all reviews",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                        contentDescription = null,
+                        modifier = Modifier.size(12.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            val currentPrice = product.priceCents / 100.0
+            val compareAtPrice = currentPrice * 1.3
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = null,
-                    tint = RatingAccent,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(MaterialTheme.spacing.xxs))
                 Text(
-                    text = product.rating.stars.toString(),
-                    style = MaterialTheme.typography.bodyLarge
+                    "$${"%.2f".format(currentPrice)}",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.SemiBold
                 )
-                Spacer(modifier = Modifier.width(MaterialTheme.spacing.xxs))
+                Spacer(Modifier.width(MaterialTheme.spacing.xs))
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                ) {
+                    Text(
+                        "In Stock",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(
+                            horizontal = MaterialTheme.spacing.xs,
+                            vertical = MaterialTheme.spacing.xxs
+                        )
+                    )
+                }
+                Spacer(Modifier.weight(1f))
                 Text(
-                    text = "(${product.rating.count} customer ratings)",
+                    "$${"%.2f".format(compareAtPrice)}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textDecoration = TextDecoration.LineThrough
                 )
             }
 
-            // Price
+            Spacer(Modifier.height(MaterialTheme.spacing.sm))
             Text(
-                text = "$${"%.2f".format(product.priceCents / 100.0)}",
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.sm))
-
-            // Overview
-            Text(
-                text = "OVERVIEW",
+                "OVERVIEW",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Text(
-                text = product.description, style = MaterialTheme.typography.bodyMedium
-            )
+            Text(product.description, style = MaterialTheme.typography.bodyMedium)
 
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.sm))
+            Spacer(Modifier.height(MaterialTheme.spacing.sm))
 
-            // Related themes / keywords
+
+            Surface(
+                shape = MaterialTheme.shapes.large,
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(MaterialTheme.spacing.md),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm)
+                ) {
+                    Text(
+                        "Product Specifications",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs)) {
+                        SpecChip(
+                            label = "Category",
+                            value = product.category,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        SpecChip(
+                            label = "Subcategory",
+                            value = product.subCategory,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs)) {
+                        SpecChip(
+                            label = "Rating",
+                            value = "${product.rating.stars} / 5.0",
+                            modifier = Modifier.weight(1f)
+                        )
+                        SpecChip(
+                            label = "Reviews",
+                            value = "${product.rating.count}",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(MaterialTheme.spacing.sm))
             Text(
-                text = "Related Themes",
+                "Related Themes",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -183,7 +312,7 @@ fun DetailContent(product: Product) {
             ) {
                 product.keywords.forEach { keyword ->
                     Text(
-                        text = "#$keyword",
+                        "#$keyword",
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier
@@ -200,20 +329,99 @@ fun DetailContent(product: Product) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.md))
+            Spacer(Modifier.height(MaterialTheme.spacing.md))
 
-            // Quantity + Add to Cart
+            Surface(
+                shape = MaterialTheme.shapes.large,
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(MaterialTheme.spacing.md)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            "Select Quantity",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(
+                            "Free shipping on orders over $40",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    SereneQuantityPicker(quantity = quantity, onQuantityChange = { quantity = it })
+                }
+            }
+
+            Spacer(Modifier.height(MaterialTheme.spacing.sm))
+
+            Surface(
+                shape = MaterialTheme.shapes.large,
+                color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(MaterialTheme.spacing.md),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.EnergySavingsLeaf,
+                        contentDescription = null,
+                    )
+                    Spacer(Modifier.width(MaterialTheme.spacing.sm))
+                    Column {
+                        Text(
+                            "Zero Carbon Footprint",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            "Packaged in 100% biodegradable kraft packaging.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(MaterialTheme.spacing.md))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm)
             ) {
-                SereneQuantityPicker(
-                    quantity = quantity, onQuantityChange = { quantity = it })
-                Spacer(Modifier.width(MaterialTheme.spacing.md))
                 SereneButton(
-                    text = "Add to Cart", modifier = Modifier.weight(1f), onClick = { })
+                    text = "Add to Cart • $${"%.2f".format(currentPrice)}",
+                    icon = Icons.Outlined.ShoppingBag,
+                    modifier = Modifier.weight(2f),
+                    onClick = { })
+                SereneButton(
+                    text = "Buy Now", modifier = Modifier.weight(1f), onClick = { })
             }
+        }
+    }
+}
+
+@Composable
+private fun SpecChip(label: String, value: String, modifier: Modifier = Modifier) {
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        modifier = modifier
+    ) {
+        Column(modifier = Modifier.padding(MaterialTheme.spacing.sm)) {
+            Text(
+                label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
         }
     }
 }

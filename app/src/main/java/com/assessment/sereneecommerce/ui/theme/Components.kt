@@ -25,9 +25,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingCartCheckout
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.outlined.EnergySavingsLeaf
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
@@ -315,9 +317,9 @@ fun SereneProductCard(
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.padding(
-                                    horizontal = MaterialTheme.spacing.xs,
-                                    vertical = MaterialTheme.spacing.xxs
-                                )
+                                horizontal = MaterialTheme.spacing.xs,
+                                vertical = MaterialTheme.spacing.xxs
+                            )
 
                         )
                     }
@@ -331,9 +333,9 @@ fun SereneProductCard(
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.padding(
-                                    horizontal = MaterialTheme.spacing.xs,
-                                    vertical = MaterialTheme.spacing.xxs
-                                )
+                                horizontal = MaterialTheme.spacing.xs,
+                                vertical = MaterialTheme.spacing.xxs
+                            )
                         )
                     }
 
@@ -539,7 +541,8 @@ fun SereneTopBar(
     onSearchClick: () -> Unit = {},
     onCartClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
-    onNavIconClick: () -> Unit = {}
+    onNavIconClick: () -> Unit = {},
+    onShareClick: () -> Unit = {}
 ) {
     TopAppBar(
         modifier = Modifier
@@ -568,42 +571,66 @@ fun SereneTopBar(
                     })
         }
     }, actions = {
-        Icon(
-            imageVector = Icons.Default.Search,
-            contentDescription = "Search",
-            modifier = Modifier
-                .size(MaterialTheme.spacing.lg)
-                .clip(CircleShape)
-                .clickable(onClick = onSearchClick)
-        )
-        Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
-        BadgedBox(
-            modifier = Modifier.size(MaterialTheme.spacing.lg), badge = {
-                Badge(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ) {
-                    Text("2")
-                }
-            }) {
+        if (shouldShowNavIcon) {
             Icon(
-                imageVector = Icons.Outlined.ShoppingBag,
-                contentDescription = "Cart",
-                modifier = Modifier.clickable(onClick = onCartClick)
+                imageVector = Icons.Default.Share,
+                contentDescription = "Share",
+                modifier = Modifier
+                    .size(MaterialTheme.spacing.lg)
+                    .clip(CircleShape)
+                    .clickable(onClick = onShareClick)
+            )
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
+            Icon(
+                imageVector = Icons.Outlined.Person,
+                contentDescription = "Profile",
+                modifier = Modifier
+                    .size(MaterialTheme.spacing.lg)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+                    .padding(2.dp)
+                    .clickable(onClick = onProfileClick)
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search",
+                modifier = Modifier
+                    .size(MaterialTheme.spacing.lg)
+                    .clip(CircleShape)
+                    .clickable(onClick = onSearchClick)
+            )
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
+
+            BadgedBox(
+                modifier = Modifier.size(MaterialTheme.spacing.lg), badge = {
+                    Badge(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
+                        Text("2")
+                    }
+                }) {
+                Icon(
+                    imageVector = Icons.Outlined.ShoppingBag,
+                    contentDescription = "Cart",
+                    modifier = Modifier.clickable(onClick = onCartClick)
+                )
+            }
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
+            Icon(
+                imageVector = Icons.Outlined.Person,
+                contentDescription = "Profile",
+                modifier = Modifier
+                    .size(MaterialTheme.spacing.lg)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+                    .padding(2.dp)
+                    .clickable(onClick = onProfileClick)
             )
         }
-        Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
-        Icon(
-            imageVector = Icons.Outlined.Person,
-            contentDescription = "Profile",
-            modifier = Modifier
-                .size(MaterialTheme.spacing.lg)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
-                .padding(2.dp)
-                .clickable(onClick = onProfileClick)
-        )
     })
+
 }
 
 @Composable
@@ -696,6 +723,7 @@ fun SereneSearchBar(
     )
 }
 
+@Preview
 @Composable
 fun CuratedBadge(modifier: Modifier = Modifier) {
     Surface(
@@ -709,7 +737,7 @@ fun CuratedBadge(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Default.Star,
+                imageVector = Icons.Outlined.EnergySavingsLeaf,
                 contentDescription = null,
                 modifier = Modifier.size(14.dp),
                 tint = RatingAccent
