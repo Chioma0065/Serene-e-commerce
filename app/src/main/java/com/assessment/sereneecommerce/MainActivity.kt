@@ -55,10 +55,13 @@ fun SereneCommerceApp() {
             title = if (currentDestination?.route == Screen.Detail.route) "Product Detail" else "Shop Explore",
             shouldShowNavIcon = currentDestination?.route == Screen.Detail.route,
             onNavIconClick = { navController.popBackStack() })
-    }, bottomBar = {
-        SereneBottomNavBar(
-            currentDestination = currentDestination, navController = navController
-        )
+    },
+        bottomBar = {
+            if (currentDestination?.route != Screen.Detail.route) {
+                SereneBottomNavBar(
+                    currentDestination = currentDestination, navController = navController
+                )
+            }
     }) { innerPadding ->
         NavHost(
             navController = navController,
