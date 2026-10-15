@@ -185,7 +185,7 @@ fun HomeContent(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = false)
 @Preview(uiMode = AndroidUiModes.UI_MODE_NIGHT_YES)
 @Composable
 fun HomePreview() {

@@ -89,13 +89,21 @@ fun DetailContent(product: Product) {
                 Surface(
                     modifier = Modifier
                         .align(Alignment.TopStart)
-                        .padding(MaterialTheme.spacing.xs),
+                        .padding(MaterialTheme.spacing.sm),
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f)
                 ) {
-                    Row {
+                    Row (
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(5.dp)
+
+                    ){
                         Icon(
-                            imageVector = Icons.Filled.Circle, contentDescription = null
+                            imageVector = Icons.Filled.Circle,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(10.dp)
                         )
                         Text(
                             text = "MINDFUL CRAFT",
@@ -128,24 +136,6 @@ fun DetailContent(product: Product) {
                     }
                 }
 
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(MaterialTheme.spacing.xs),
-                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xxs)
-                ) {
-                    repeat(3) { index ->
-                        Box(
-                            modifier = Modifier
-                                .size(if (index == 0) 8.dp else 6.dp)
-                                .background(
-                                    color = if (index == 0) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.outlineVariant,
-                                    shape = CircleShape
-                                )
-                        )
-                    }
-                }
             }
 
             Column(
@@ -157,8 +147,17 @@ fun DetailContent(product: Product) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         product.category,
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f),
+                                shape = MaterialTheme.shapes.large
+                            ),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(
+                        modifier = Modifier.width(5.dp)
                     )
                     Text(
                         "  •  ",
@@ -167,6 +166,11 @@ fun DetailContent(product: Product) {
                     )
                     Text(
                         product.subCategory,
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f),
+                                shape = MaterialTheme.shapes.medium
+                            ),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -234,9 +238,9 @@ fun DetailContent(product: Product) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(
-                                    horizontal = MaterialTheme.spacing.xs,
-                                    vertical = MaterialTheme.spacing.xxs
-                                )
+                                horizontal = MaterialTheme.spacing.xs,
+                                vertical = MaterialTheme.spacing.xxs
+                            )
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Circle,
@@ -455,7 +459,8 @@ fun DetailContent(product: Product) {
                     modifier = Modifier.weight(2f),
                     onClick = { })
                 SereneButton(
-                    text = "Buy Now", modifier = Modifier.weight(1f), onClick = { })
+                    text = "Buy Now",
+                    modifier = Modifier.weight(1f), onClick = { })
             }
         }
     }
